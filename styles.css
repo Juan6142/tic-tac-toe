@@ -15,12 +15,13 @@ body {
 }
 
 .main-title {
-    margin-bottom: 4rem;
+    margin-top: 2rem;
+    margin-bottom: 2rem;
 }
 
 .main-container {
-    height: 600px;
-    width: 600px;
+    height: 500px;
+    width: 500px;
     background-color: rgb(74, 69, 69);
     margin: 0 auto;
     display: grid;
@@ -47,6 +48,8 @@ body {
     height: 3rem;
     border-radius: 20px;
     font-family: 'Courier New', Courier, monospace;
+    font-weight: bold;
+    font-size: 16px;
 }
 
 .result-title {
@@ -55,5 +58,9 @@ body {
 
 .play-again {
     text-align: center;
+    
 }
 
+.current-turn {
+    text-align: center;
+}
