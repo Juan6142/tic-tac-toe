@@ -1,41 +1,42 @@
-//players
+//p
+//game controller
+//gameboard
+//display controller
 const player = (name, marker) => {
-    return {name, marker};
-};
+    return { name, marker}
+} 
 
-//gamecontroller
 const gameController = (() => {
-    const player1 = player("Player1", "X");
-    const player2 = player("Player2", "O");
-    let currentPlayer = player1;
-  /*const switchPlayer = () => {
-        if (currentPlayer === player1) {
-            currentPlayer = player2;
-        } else {
-            currentPlayer = player1;
-        }
-    };
-    */
-    const switchPlayer = () => {
-        currentPlayer = currentPlayer === player1 ? player2 : player1;
-    };
+    const player1 = player("Player 1", "X")
+    const player2 = player("Player 2", "O")
+    let currentPlayer = player1
 
-    const getCurrentPlayer = () => currentPlayer;
+    const switchPlayer = () => {
+        if (currentPlayer === player1) {
+            currentPlayer = player2
+        } else {
+            currentPlayer = player1
+        }
+    }
+    /* si vas a necesitar usar esa variable en otro modulo, tendras que leer la 
+    variable en una function expression, con el nombre de get"var", para poder
+    enviarla a otros modulos*/
+    const getCurrentPlayer = () => currentPlayer
 
     const resetPlayers = () => {
         currentPlayer = player1;
-    };
+    }
+    /* like you see, every statement is in a function expression */ 
+    const getPlayer1 = () => player1
+    const getPlayer2 = () => player2
 
-    const getPlayer1 = () => player1;
-    const getPlayer2 = () => player2;
-
-    return { switchPlayer, getCurrentPlayer, resetPlayers, getPlayer1, getPlayer2 };
+    /* just return the an object with the only functions that you will use*/
+    return { switchPlayer, getCurrentPlayer, resetPlayers, getPlayer1, getPlayer2};
 })();
 
-//gameboard
-const ticTacToe = (() => {
+const gameBoard = (() => {
     const board = ["", "", "", "", "", "", "", "", ""]
-    
+
     const checkResult = () => {
         const linesToCheck = [
             [0, 1, 2], [3, 4, 5], [6, 7, 8], // Rows
@@ -71,13 +72,15 @@ const ticTacToe = (() => {
         // no hay valor valido o especifico // ausencia de valor especifico
         return null;       
     };
+
     const resetBoard = () => {
         board.fill("");
     };
-    return { board, checkResult, resetBoard} 
+    /* only return the functions and variables that we're going to use outside the
+    module*/
+    return { board, checkResult, resetBoard}
 })();
 
-//displaycontroller
 const displayController = (() => {
     const spaces = document.querySelectorAll(".space")
     const currentTurn = document.querySelector(".current-turn")
@@ -86,13 +89,18 @@ const displayController = (() => {
     const resetButton = document.createElement("button")
     resetButton.classList.add("reset-button")
     let gameEnded = false;
-    /*
-    arr.forEach(function callback(currentValue, index, array) {
-    // tu iterador
-    }[, thisArg]); 
-     */
+
+    /* arr.forEach((value, index)) {      
+    } */
     const render = () => {
-        ticTacToe.board.forEach((value, index) => {
+        // for each para tierear sobre cada elemento del array
+        // value = current value of the element in the array
+        // index = index of the current element in the array
+        gameBoard.board.forEach((value, index) => {
+            // actualiza el contenido de texto en el html correspondiente al espacio
+            // del tablero con el valor actual del array
+            /* spaces[index]: 
+            Accede al elemento del tablero en el HTML correspondiente al índice actual. */
             spaces[index].textContent = value;
         });
     };
@@ -103,51 +111,49 @@ const displayController = (() => {
             currentTurn.textContent = `${currentPlayer.name} (${currentPlayer.marker}) turn`
         }
     }
+
     const handleClick = (index) => {
-        /* En lugar de ejecutar el resto del código y luego devolver undefined 
-        explícitamente, se utiliza return para finalizar la función inmediatamente
-        y devolver automáticamente undefined. */
         if (gameEnded) {
             return
         }
-
+        // we are going to use it
         const currentPlayer = gameController.getCurrentPlayer();
-        if (ticTacToe.board[index] === "" && currentPlayer) {
-            ticTacToe.board[index] = currentPlayer.marker;
+        if (gameBoard.board[index] === "" && currentPlayer) {
+            gameBoard.board[index] = currentPlayer.marker;
             gameController.switchPlayer();
-            
             render();
             //
-            currentTurnInfo()
-            const result = ticTacToe.checkResult();
+            currentTurnInfo();
+            const result = gameBoard.checkResult();
             if (result) {
                 gameEnded = true
                 if (result === "tie") {
                     finalResult.textContent = "It's a tie!";
                 } else {
-                    finalResult.textContent = `${result.name} (${result.marker}) wins`;
+                    finalResult.textContent = `${result.name} (${result.marker}) wins`
                 }
                 playAgain.appendChild(resetButton);
                 resetButton.textContent = "Play Again?";
-            }
+            }       
         }
-    };
+    }
     const reset = () => {
-        ticTacToe.resetBoard();
+        //call to all reset functions
+        gameBoard.resetBoard();
         gameController.resetPlayers();
         finalResult.textContent = "";
-        gameEnded = false;
+        gameEnded = false
         playAgain.removeChild(resetButton);
         render();
+        currentTurn.textContent = "Player 1 (X) turn"
     };
-
-    resetButton.addEventListener("click", reset);
-
+    resetButton.addEventListener("click", reset)
+    // call to handleclick
     spaces.forEach((space, index) => {
-        space.addEventListener("click", () => handleClick(index));
+        /* Define una función de flecha que llama a la función handleClick con el 
+        índice correspondiente cuando el espacio es clicado. */
+        space.addEventListener("click", () => handleClick(index))
     });
-    return { render };
-})()
-
-    
-
+    //exponer la funcion para uso externo(encapsulamiento, diseno modular)
+    return { render }
+})();
